@@ -2,7 +2,6 @@ package `2019`
 
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.CompletableSubject
-import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.UnicastSubject
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
@@ -12,7 +11,7 @@ class IntCode(private val registers: MutableList<Long>, private val name: String
     val executor: Executor = Executors.newSingleThreadExecutor()
     val completePublishSubject = CompletableSubject.create()
     val inputSubject = UnicastSubject.create<Long>()
-    val outputSubject = PublishSubject.create<Long>()
+    val outputSubject = UnicastSubject.create<Long>()
     private var programCounter = 0
     private var relativeBase = 0
     private var programComplete = false
