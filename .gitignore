@@ -1,2 +1,4 @@
 *.class
 out/production/AdventOfCode/META-INF/AdventOfCode.kotlin_module
+.gradle
+build

@@ -2,6 +2,7 @@ package `2019`
 
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.CompletableSubject
+import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.UnicastSubject
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
@@ -12,6 +13,7 @@ class IntCode(private val registers: MutableList<Long>, private val name: String
     val completePublishSubject = CompletableSubject.create()
     val inputSubject = UnicastSubject.create<Long>()
     val outputSubject = UnicastSubject.create<Long>()
+    val awaitingInputSubject = UnicastSubject.create<Unit>()
     private var programCounter = 0
     private var relativeBase = 0
     private var programComplete = false
@@ -19,6 +21,7 @@ class IntCode(private val registers: MutableList<Long>, private val name: String
     init {
         inputSubject
             .observeOn(Schedulers.from(executor))
+            .subscribeOn(Schedulers.from(executor))
             .subscribe { input ->
                 processProgram(input)
             }
@@ -56,6 +59,7 @@ class IntCode(private val registers: MutableList<Long>, private val name: String
                         current = null;
                         programCounter += 2
                     } else {
+                        awaitingInputSubject.onNext(Unit)
                         return;
                     }
                 }
