@@ -154,7 +154,7 @@ class Day10Part1 {
 
     private fun getFactors(x: Int): List<Int> {
         val factors = mutableListOf<Int>()
-        val primes = listOf<Int>(2, 3, 5, 7, 11, 13, 17, 19)
+        val primes = listOf<Int>(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79)
         for (prime in primes) {
             if (prime > kotlin.math.abs(x)) {
                 break
