@@ -29,4 +29,8 @@ dependencies {
     compile "${jme3.g}:jme3-core:${jme3.v}"
     runtime "${jme3.g}:jme3-desktop:${jme3.v}"
     runtime "${jme3.g}:jme3-lwjgl:${jme3.v}"
+
+    implementation 'com.googlecode.lanterna:lanterna:3.0.1'
+
+    implementation 'org.jgrapht:jgrapht-core:1.3.1'
 }

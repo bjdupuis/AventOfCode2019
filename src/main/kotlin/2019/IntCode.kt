@@ -1,16 +1,21 @@
 package `2019`
 
+import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.CompletableSubject
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.UnicastSubject
+import java.util.*
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import kotlin.system.exitProcess
 
-class IntCode(private val registers: MutableList<Long>, private val name: String) {
-    val executor: Executor = Executors.newSingleThreadExecutor()
-    val completePublishSubject = CompletableSubject.create()
+class IntCode(private val initialRegisters: List<Long>, val name: String) {
+    private val registers: MutableList<Long> = mutableListOf<Long>().apply {
+        addAll(initialRegisters)
+    }
+    private val executor: Executor = Executors.newSingleThreadExecutor()
+    val completePublishSubject = UnicastSubject.create<Unit>()
     val inputSubject = UnicastSubject.create<Long>()
     val outputSubject = UnicastSubject.create<Long>()
     val awaitingInputSubject = UnicastSubject.create<Unit>()
@@ -20,11 +25,22 @@ class IntCode(private val registers: MutableList<Long>, private val name: String
 
     init {
         inputSubject
-            .observeOn(Schedulers.from(executor))
+//            .observeOn(Schedulers.from(executor))
             .subscribeOn(Schedulers.from(executor))
             .subscribe { input ->
                 processProgram(input)
             }
+        processProgram(null)
+    }
+
+    fun reset() {
+        programComplete = false
+        programCounter = 0
+        registers.clear()
+        registers.addAll(initialRegisters)
+        Observable.just(Unit)
+            .subscribeOn(Schedulers.from(executor))
+            .subscribe { processProgram(null) }
     }
 
     private fun processProgram(input: Long?): Unit {
@@ -112,7 +128,7 @@ class IntCode(private val registers: MutableList<Long>, private val name: String
 
                 99 -> {
                     programComplete = true
-                    completePublishSubject.onComplete()
+                    completePublishSubject.onNext(Unit)
                     return;
                 }
                 else -> {
